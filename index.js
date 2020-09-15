@@ -38,9 +38,35 @@ module.exports = cookieSession
  * @public
  */
 
+let decode  = (string)  => {
+  var body = Buffer.from(string, 'base64').toString('utf8')
+  return JSON.parse(body)
+}
+
+/**
+ * Encode an object into a base64-encoded JSON string.
+ *
+ * @param {Object} body
+ * @return {String}
+ * @private
+ */
+
+let encode = (body) => {
+  var str = JSON.stringify(body)
+  return Buffer.from(str).toString('base64')
+}
+
+
 function cookieSession (options) {
   var opts = options || {}
-
+  if(opts.decode) {
+    decode = opts.decode;
+    delete opts.decode;
+  }
+  if(opts.encode) {
+    encode = opts.encode;
+    delete opts.encode;
+  }
   // cookie name
   var name = opts.name || 'session'
 
@@ -248,23 +274,6 @@ function SessionContext () {
  * @private
  */
 
-function decode (string) {
-  var body = Buffer.from(string, 'base64').toString('utf8')
-  return JSON.parse(body)
-}
-
-/**
- * Encode an object into a base64-encoded JSON string.
- *
- * @param {Object} body
- * @return {String}
- * @private
- */
-
-function encode (body) {
-  var str = JSON.stringify(body)
-  return Buffer.from(str).toString('base64')
-}
 
 /**
  * Try getting a session from a cookie.
